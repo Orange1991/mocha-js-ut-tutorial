@@ -1,4 +1,4 @@
-#mocha-js-ut-tutorial
+# mocha-js-ut-tutorial
 
 [TOC]
 
@@ -7,14 +7,15 @@
 Mocha的特点有：
 
 1. 既可以测试简单的JavaScript函数，又可以测试异步代码，因为异步是JavaScript的特性之一；
-2. 可以自动运行所有测试，也可以只运行特定的测试；
-3. 支持before、after、beforeEach和afterEach来编写初始化代码。
+2. 可以自动运行所有测试，可以只运行特定的测试，也可以跳过部分测试；
+3. 支持before、after、beforeEach和afterEach来编写初始化和清理代码。
+4. ...
 
 在本文中，我们将所有相关代码及文档放在文件夹`mocha-js-ut-tutorial`中，在文中，该文件夹目录亦称之为根目录或用`/`表示。
 
-##Mocha初体验
+## Mocha初体验
 
-###安装Mocha
+### 安装Mocha
 
 在安装Mocha前，请确认根目录中存在`package.json`文件。手动创建或`npm init`均可。
 
@@ -24,7 +25,7 @@ npm install --save-dev mocha
 
 一般我们只在开发阶段才会对代码进行单例测试，因此Mocha只需要在开发阶段中使用，将其安装到DevDependencies中即可。有些教程中会建议把Mocha安装到全局（-g）中，私以为没有必要。正式打包发布时，devDependencies的包不会被包含进来。
 
-###Hello World
+### Hello World
 
 1.在根目录创建`hello-world.test.js`
 
@@ -52,11 +53,11 @@ describe('hello world', () => {
 
 如果在上述步骤中遇到错误，请参考本文后续章节[ES6](#es6)。
 
-##使用Mocha对Javascript模块进行单元测试
+## 使用Mocha对Javascript模块进行单元测试
 
 在上一节中，我们通过一个hello-world程序对Mocha有了最初的认识，然而与在实际项目中的使用情况还有些差距。接下来我们将模拟一个实际项目并使用Mocha对其进行测试。
 
-###编写待测试模块源码
+### 编写待测试模块源码
 
 1.在根目录创建`src`目录
 2.创建`add.js`
@@ -71,7 +72,7 @@ module.exports = (a, b) => a + b;
 module.exports = (a, b) => a - b;
 ```
 
-###编写模块化测试代码
+### 编写模块化测试代码
 
 对Javascript模块进行单元测试时，我们一般会创建`test`目录，并将所有测试文件放在`test`目录中。Mocha默认运行`test`目录下的测试文件，这样在执行测试命令`mocha`时就不需要加上`待测试文件名称`了。另外，在编写测试代码时，一般测试代码与源代码模块一一对应。
 
@@ -117,7 +118,7 @@ describe('Test minus() function', function() {
 
 > 3 passing (7ms)
 
-##npm test script
+## npm test script
 
 在`package.json`的`scripts`中添加一条`test`命令：
 
@@ -133,7 +134,7 @@ describe('Test minus() function', function() {
 
 这样在与命令行中使用`npm test`即可运行Mocha，即使Mocha没有全局安装也可以正常运行。
 
-##断言
+## 断言
 
 Mocha允许使用任意断言库。在前面的例子中，我们使用的是Nodejs内置的`[assert](https://nodejs.org/api/assert.html)`模块。`assert`模块非常简单，它断言一个表达式为true。如果断言失败，就抛出Error。我们还可以使用以下第三方断言库：
 
@@ -144,10 +145,15 @@ Mocha允许使用任意断言库。在前面的例子中，我们使用的是Nod
 4. [better-assert](https://github.com/visionmedia/better-assert) C-style self-documenting assert()
 5. [unexpected](http://unexpected.js.org/) 可扩展的BDD风格断言工具包
 
-##异步测试
-##同步测试
+## 异步测试
 
-##lambdas 箭头函数
+参考 [Mocha官方文档 Asynchronous Code](http://mochajs.org/#asynchronous-code)
+
+## 同步测试
+
+参考 [Mocha官方文档 Synchronous Code](http://mochajs.org/#synchronous-code)
+
+## lambdas 箭头函数
 
 在Mocha中使用lambdas箭头函数是让人沮丧的。由于从词法上来说[箭头函数](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Functions/Arrow_functions)会绑定this的值，因此这样的函数将无法访问Mocha的上下文（Context），如下：
 
@@ -164,7 +170,7 @@ describe('my suite', function() {
 
 如果你不需要使用Mocha Context，你可以正常使用lambdas 箭头函数。然而，如果你使用了lambdas并且有一天你需要访问Mocha Context，重构的难度将会更大。
 
-##HOOKS
+## HOOKS
 
 HOOKS不好翻译。在默认的BDD风格接口中，Mocha提供了`before()``after()``beforeEach()``afterEach()`四个方法。这些方法可以用来在测试前初始化前置条件或者在测试结束后执行清理工作。
 
@@ -194,7 +200,7 @@ describe('hooks', function() {
 
 测试用例可以写在任意位置（在HOOKS之前、在HOOKS之后、穿插在HOOKS之间）。不论书写位置如何，所有的HOOKS都可以按合理的顺序运行。先执行`before()`（且只执行一次）；然后对每个测试用例先执行`beforeEach`，接下来运行测试用例，再运行`afterEach`；最后所有测试用例测试结束后，执行`after()`（只执行一次）。【猜测】：同一种HOOK可以写多个，多个相同类型的HOOKS的执行顺序由他们定义的相对位置顺序决定。
 
-###HOOKS的描述
+### HOOKS的描述
 
 HOOk可以指定一个可选的描述，根据这个描述可以更容易地在测试中定位错误。如果HOOK被指定了函数名，在输出中将使用这个函数名（见样例2）。
 
@@ -212,11 +218,11 @@ beforeEach('some description', function() {
 });
 ```
 
-###ROOT-LEVEL HOOKS
+### ROOT-LEVEL HOOKS
 
 在最外层的`describe()`之外也可以使用HOOKS，因为Mocha Context实现了`describe()`，这样的HOOK就是ROOT-LEVEL HOOK，对于Mocha的`describe`，我们称之为“root suite”。
 
-##待编写（PENDING）的测试用例
+## 待编写（PENDING）的测试用例
 
 ```
 it('should ...');
@@ -224,7 +230,7 @@ it('should ...');
 
 没有回调函数。Someone should write these test cases eventually.
 
-##单独（EXCLUSIVE）运行部分测试用例
+## 单独（EXCLUSIVE）运行部分测试用例
 
 在测试集（suite）或者测试用例（case）后面使用`.only()`既可以在测试时只运行部分suites或cases。其内部级联的suites和cases也会被执行（除非内部还有其他`.only()`）。
 
@@ -248,7 +254,7 @@ describe('test', function() {
 
 在`>=V3.0.0`中，`.only()`可以使用多次。`.only()`对HOOKS无影响，HOOKS总是可以被执行。
 
-##跳过（INCLUSIVE）部分测试用例
+## 跳过（INCLUSIVE）部分测试用例
 
 与`.only()`相对应的用法，在suite或case后面使用`.skip()`来跳过（略过）某个测试集或测试用例。被跳过的suite和case将被标为PENDING。
 
@@ -275,7 +281,7 @@ describe('Array', function() {
 > Use .skip() instead of commenting tests out
 > 如果不想执行某些测试用例，使用.skip()而不是把它们注释掉
 
-###this.skip()
+### this.skip()
 
 在运行时也可以使用`this.skip()`来中止跳过测试。场景：有时候测试用例必须在特定环境或配置下运行，且环境和配置不能事先预知，只能在运行时获得。在`before()`HOOK中使用`this.skip()`可以跳过整个suite。
 
@@ -297,7 +303,7 @@ it('should only test in the correct environment', function() {
 > 2. Don’t do nothing! A test should make an assertion or use this.skip().
 > 不要出现什么语句都没有的逻辑代码块，一个测试用例应该要么做出断言，要么使用this.skip()跳过测试。
 
-##重试（RETRY）
+## 重试（RETRY）
 
 这个功能主要是为端到端(functional tests/Selenium…)的测试设计的，可以对某个测试用例尝试执行多次。不建议在单元测试（unit tests）中使用这个功能。这个功能会重新执行`befreEach()`/`afterEach()`，但不会重复执行`before()`/`after()`。
 
@@ -320,7 +326,7 @@ describe('retries', function() {
 });
 ```
 
-##REPORTERS 测试报告
+## REPORTERS 测试报告（生成器）
 
 Mocha提供多种风格的测试报告，同时也可以使用第三方的测试报告样式。可以使用参数`--reporter <name>`来指定报告样式。
 
@@ -391,17 +397,17 @@ Mocha提供多种风格的测试报告，同时也可以使用第三方的测试
 
       ![mochawesome](/article/img/20170928161509_778.jpg)
 
-##THE TEST/ DIRECTORY
+## THE TEST/ DIRECTORY
 
 Mocha默认在`./test`目录下找`js`和`coffee`文件来执行，因此应该将测试文件放在`test`目录下。
 
-##Mocha命令参数
+## Mocha命令参数
 
-###--recursive
+### --recursive
 
 `mocha`命令默认只执行`test`目录（不包含其子目录）下的测试文件，加上`--recursive`参数可以改变这种行为，从而递归执行`test`及其子孙目录下的测试文件。
 
-##MOCHA.OPTS
+## MOCHA.OPTS
 
 Mocha会尝试加载`./test/mocha.opts`文件并使用其中的配置作为运行参数，我们可以把任意命令行参数放在这个文件中。另外，命令行参数优先级高于mocha.opts文件中的参数。如：
 
@@ -413,7 +419,7 @@ Mocha会尝试加载`./test/mocha.opts`文件并使用其中的配置作为运�
 
 `$ mocha --reporter list --growl` 该命令会覆盖mocha.opts中的reporter参数，并且启用[Growl](http://growl.info/)，使用BDD格式接口。
 
-##MORE
+## MORE
 参见 [Mocha](http://mochajs.org):
 
 - DYNAMICALLY GENERATING TESTS
@@ -425,7 +431,7 @@ Mocha会尝试加载`./test/mocha.opts`文件并使用其中的配置作为运�
 - EDITOR PLUGINS
 - EXAMPLES
 
-##参考
+## 参考
 
 [Mocha](http://mochajs.org)
 [Chai](http://chaijs.com/)
